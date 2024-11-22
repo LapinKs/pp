@@ -7,13 +7,13 @@ const customFilterName = getPluginOptionName(pluginName, 'customfilter');
 export const register = (editor) => {
     const registerOption = editor.options.register;
 
-
+    
     registerOption(customOptionName, {
         processor: 'string',
         "default": '', 
     });
 
-
+    
     registerOption(customFilterName, {
         processor: 'boolean',
         "default": false,
@@ -26,4 +26,3 @@ export const getCustomOptions = (editor) => {
 };
 
 export const isCustomFilterActive = (editor) => editor.options.get(customFilterName);
-

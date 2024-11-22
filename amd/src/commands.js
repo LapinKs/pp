@@ -5,12 +5,6 @@ import {handleAction} from 'tiny_custombutton/ui';
 import {getSelectedElement} from 'tiny_custombutton/utils';
 import {isCustomFilterActive} from 'tiny_custombutton/options';
 
-/**
- * Tiny Custom Button commands.
- *
- * @module      tiny_custombutton/commands
- * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
 
 export const getSetup = async() => {
     const [
@@ -23,10 +17,7 @@ export const getSetup = async() => {
 
     return (editor) => {
         if (isCustomFilterActive(editor)) {
-            // Register the Button Icon.
             editor.ui.registry.addIcon(icon, buttonImage.html);
-
-            // Register the Menu Button as a toggle.
             editor.ui.registry.addToggleButton(buttonName, {
                 icon,
                 tooltip: buttonText,
@@ -40,8 +31,6 @@ export const getSetup = async() => {
                     });
                 },
             });
-
-            // Add the Menu Item.
             editor.ui.registry.addMenuItem(buttonName, {
                 icon,
                 text: buttonText,
