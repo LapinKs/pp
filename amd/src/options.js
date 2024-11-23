@@ -7,22 +7,23 @@ const customFilterName = getPluginOptionName(pluginName, 'customfilter');
 export const register = (editor) => {
     const registerOption = editor.options.register;
 
-    
     registerOption(customOptionName, {
         processor: 'string',
-        "default": '', 
+        default: '',
     });
 
-    
     registerOption(customFilterName, {
         processor: 'boolean',
-        "default": false,
+        default: false,
     });
 };
 
 export const getCustomOptions = (editor) => {
     const optionsString = editor.options.get(customOptionName) || '';
-    return optionsString.split('\n').map(option => option.trim()).filter(option => option);
+    return optionsString
+        .split('\n')
+        .map((option) => option.trim())
+        .filter((option) => option);
 };
 
 export const isCustomFilterActive = (editor) => editor.options.get(customFilterName);

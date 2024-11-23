@@ -1,52 +1,62 @@
 import {getCustomOptions} from 'tiny_custombutton/options';
 
+let usedAnswers = []; // Храним использованные ответы.
+
 /**
- * Handles the button action.
- *
- * @param {Editor} editor TinyMCE editor instance
+ * Генерирует HTML для списка вариантов.
+ * @param {Editor} editor TinyMCE editor instance.
+ * @returns {string} HTML для списка вариантов.
  */
-export const handleAction = (editor, answerTracker) => {
-    const answers = answerTracker.getAnswers();
-    if (!answers.length) {
-        editor.notificationManager.open({
-            text: 'Варианты ответа отсутствуют. Добавьте их с помощью [[номер вопроса]].',
-            type: 'warning',
-        });
-        return;
+const generateAnswerList = (editor) => {
+    const options = getCustomOptions(editor);
+    const availableOptions = options.filter((_, index) => !usedAnswers.includes(index));
+
+    if (!availableOptions.length) {
+        return '<p>Нет доступных вариантов ответа.</p>';
     }
 
-    const listHTML = answers.map((answer) => `<li>${answer}</li>`).join('');
-    const dropdownHTML = `
-        <div class="answer-dropdown">
-            <button>Выберите ответ</button>
-            <ul class="dropdown-content">
-                ${listHTML}
-            </ul>
-        </div>
-    `;
-
-    editor.insertContent(dropdownHTML);
+    return availableOptions
+        .map(
+            (option, index) => `
+                <div class="answer-item" data-answer="${index}">
+                    ${option}
+                </div>`
+        )
+        .join('');
 };
 
-export const trackAnswers = (editor) => {
-    const answers = [];
-    const updateAnswerList = () => {
-        const content = editor.getContent();
-        const matches = content.match(/\[\[(.*?)\]\]/g);
-        if (matches) {
-            answers.length = 0; // Очистить предыдущий список.
-            matches.forEach((match) => {
-                const answer = match.replace(/\[\[|\]\]/g, '');
-                if (!answers.includes(answer)) {
-                    answers.push(answer);
-                }
-            });
+/**
+ * Помечает вариант ответа как использованный.
+ * @param {number} answerIndex Индекс варианта ответа.
+ */
+const markAnswerAsUsed = (answerIndex) => {
+    if (!usedAnswers.includes(answerIndex)) {
+        usedAnswers.push(answerIndex);
+    }
+};
+
+/**
+ * Обрабатывает вставку текста и управление вариантами.
+ * @param {Editor} editor TinyMCE editor instance.
+ */
+export const handleAction = (editor) => {
+    const selectedText = editor.selection.getContent();
+    const optionsHTML = generateAnswerList(editor);
+
+    editor.insertContent(`
+        <span class="dropdown">
+            <span class="dropdown-toggle">Выбрать вариант</span>
+            <div class="dropdown-content">${optionsHTML}</div>
+        </span>
+    `);
+
+    document.addEventListener('click', (event) => {
+        if (event.target.classList.contains('answer-item')) {
+            const answerIndex = event.target.dataset.answer;
+            markAnswerAsUsed(answerIndex);
+
+            const answerPlaceholder = `[[${answerIndex}]]`;
+            editor.insertContent(answerPlaceholder);
         }
-    };
-
-    editor.on('input', updateAnswerList); // Обновляем список при изменении контента.
-
-    return {
-        getAnswers: () => answers,
-    };
+    });
 };

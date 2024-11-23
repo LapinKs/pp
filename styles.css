@@ -1,24 +1,38 @@
-.answer-dropdown {
+.dropdown {
     position: relative;
     display: inline-block;
 }
 
-.answer-dropdown .dropdown-content {
+.dropdown-toggle {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+
+.dropdown-content {
     display: none;
     position: absolute;
     background-color: #f9f9f9;
     min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
     z-index: 1;
 }
 
-.answer-dropdown:hover .dropdown-content {
+.dropdown:hover .dropdown-content {
     display: block;
 }
 
-.answer-dropdown button {
-    margin: 0.25%;
-    min-width: 10%;
+.answer-item {
+    padding: 5px;
     cursor: pointer;
+    border-bottom: 1px solid #ddd;
 }
 
+.answer-item:hover {
+    background-color: #f0f0f0;
+}
+.tiny_custombutton button {
+    background-image: url([[pix:tiny_custombutton/icon]]);
+    background-repeat: no-repeat;
+    background-size: contain;
+}

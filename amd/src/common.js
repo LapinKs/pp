@@ -1,4 +1,3 @@
-
 export default {
     pluginName: 'tiny_custombutton/plugin',
     component: 'tiny_custombutton',
