@@ -1,4 +1,4 @@
-import {getCustomOptions} from 'tiny_custombutton/options';
+import { getCustomOptions } from 'tiny_custombutton/options';
 
 let usedAnswers = []; // Храним использованные ответы.
 
@@ -10,7 +10,7 @@ let usedAnswers = []; // Храним использованные ответы.
 const generateAnswerList = (editor) => {
     const options = getCustomOptions(editor);
     const availableOptions = options.filter((option) => {
-        const {index, unlimited} = option;
+        const { index, unlimited } = option;
         return unlimited || !usedAnswers.includes(index); // Учитываем флаг unlimited.
     });
 
@@ -20,7 +20,7 @@ const generateAnswerList = (editor) => {
 
     return availableOptions
         .map(
-            ({index, label}) => `
+            ({ index, label }) => `
                 <div class="answer-item" data-answer="${index}">
                     ${label}
                 </div>`
@@ -47,7 +47,7 @@ export const handleAction = (editor) => {
 
     // Вставляем выпадающий список в редактор.
     const dropdownHTML = `
-        <span class="dropdown">
+        <span class="dropdown" data-dropped="true">
             <span class="dropdown-toggle">Выбрать вариант</span>
             <div class="dropdown-content">${optionsHTML}</div>
         </span>
@@ -71,15 +71,48 @@ export const handleAction = (editor) => {
                         markAnswerAsUsed(answerIndex);
                     }
 
-                    // Вставляем выбранный текст и заменяем содержимое дропдауна.
-                    const answerPlaceholder = `<span class="custom-placeholder">[[${selectedOption.label}]]</span>`;
+                    // Скрытно заменяем выпадающий список на плейсхолдер.
+                    const answerPlaceholder = `<span class="custom-placeholder" data-answer="${answerIndex}">[[${selectedOption.label}]]</span>`;
                     dropdown.outerHTML = answerPlaceholder;
-
-                    // Убираем событие для предотвращения дублирования.
-                    dropdown.removeEventListener('click', arguments.callee);
                 }
             }
         });
     });
 };
+
+/**
+ * Функция для рендеринга данных перед предварительным просмотром.
+ * Заменяет дропдаун на плейсхолдеры в контексте превью.
+ * @param {Editor} editor TinyMCE editor instance.
+ */
+export const renderPreview = (editor) => {
+    // Находим все дропдауны в контенте и заменяем их на плейсхолдеры.
+    const dropdownElements = editor.dom.select('.dropdown');
+    dropdownElements.forEach((dropdown) => {
+        const answerIndex = dropdown.querySelector('.dropdown-toggle').innerText; // или другим способом получаем индекс
+        const answerPlaceholder = `<span class="custom-placeholder" data-answer="${answerIndex}">[[${answerIndex}]]</span>`;
+        editor.dom.replace(answerPlaceholder, dropdown);
+    });
+};
+
+/**
+ * Восстановление состояния при редактировании.
+ * Заменяет плейсхолдеры обратно на дропдауны при повторном открытии редактора.
+ * @param {Editor} editor TinyMCE editor instance.
+ */
+export const restoreEditorState = (editor) => {
+    // Восстановление дропдаунов из плейсхолдеров.
+    const placeholders = editor.dom.select('.custom-placeholder');
+    placeholders.forEach((placeholder) => {
+        const index = placeholder.dataset.answer;
+        const dropdownHTML = `
+            <span class="dropdown" data-dropped="true">
+                <span class="dropdown-toggle">Выбрать вариант</span>
+                <div class="dropdown-content">${generateAnswerList(editor)}</div>
+            </span>
+        `;
+        editor.dom.replace(dropdownHTML, placeholder);
+    });
+};
+
 
