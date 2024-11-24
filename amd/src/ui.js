@@ -9,7 +9,10 @@ let usedAnswers = []; // Храним использованные ответы.
  */
 const generateAnswerList = (editor) => {
     const options = getCustomOptions(editor);
-    const availableOptions = options.filter((_, index) => !usedAnswers.includes(index));
+    const availableOptions = options.filter((option) => {
+        const {index, unlimited} = option;
+        return unlimited || !usedAnswers.includes(index); // Учитываем флаг unlimited.
+    });
 
     if (!availableOptions.length) {
         return '<p>Нет доступных вариантов ответа.</p>';
@@ -17,9 +20,9 @@ const generateAnswerList = (editor) => {
 
     return availableOptions
         .map(
-            (option, index) => `
+            ({index, label}) => `
                 <div class="answer-item" data-answer="${index}">
-                    ${option}
+                    ${label}
                 </div>`
         )
         .join('');
@@ -40,23 +43,43 @@ const markAnswerAsUsed = (answerIndex) => {
  * @param {Editor} editor TinyMCE editor instance.
  */
 export const handleAction = (editor) => {
-    const selectedText = editor.selection.getContent();
     const optionsHTML = generateAnswerList(editor);
 
-    editor.insertContent(`
+    // Вставляем выпадающий список в редактор.
+    const dropdownHTML = `
         <span class="dropdown">
             <span class="dropdown-toggle">Выбрать вариант</span>
             <div class="dropdown-content">${optionsHTML}</div>
         </span>
-    `);
+    `;
+    editor.insertContent(dropdownHTML);
 
-    document.addEventListener('click', (event) => {
-        if (event.target.classList.contains('answer-item')) {
-            const answerIndex = event.target.dataset.answer;
-            markAnswerAsUsed(answerIndex);
+    // Обработка кликов по выпадающему списку.
+    const dropdownElements = document.querySelectorAll('.dropdown');
 
-            const answerPlaceholder = `[[${answerIndex}]]`;
-            editor.insertContent(answerPlaceholder);
-        }
+    dropdownElements.forEach((dropdown) => {
+        dropdown.addEventListener('click', (event) => {
+            if (event.target.classList.contains('answer-item')) {
+                const answerIndex = parseInt(event.target.dataset.answer, 10);
+                const selectedOption = getCustomOptions(editor).find(
+                    (option) => option.index === answerIndex
+                );
+
+                if (selectedOption) {
+                    // Помечаем как использованный, если нет флага unlimited.
+                    if (!selectedOption.unlimited) {
+                        markAnswerAsUsed(answerIndex);
+                    }
+
+                    // Вставляем выбранный текст и заменяем содержимое дропдауна.
+                    const answerPlaceholder = `<span class="custom-placeholder">[[${selectedOption.label}]]</span>`;
+                    dropdown.outerHTML = answerPlaceholder;
+
+                    // Убираем событие для предотвращения дублирования.
+                    dropdown.removeEventListener('click', arguments.callee);
+                }
+            }
+        });
     });
 };
+

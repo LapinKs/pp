@@ -1,15 +1,16 @@
-.dropdown {
+/* Общий контейнер TinyMCE */
+.tiny_custombutton .dropdown {
     position: relative;
     display: inline-block;
 }
 
-.dropdown-toggle {
+.tiny_custombutton .dropdown-toggle {
     cursor: pointer;
     color: blue;
     text-decoration: underline;
 }
 
-.dropdown-content {
+.tiny_custombutton .dropdown-content {
     display: none;
     position: absolute;
     background-color: #f9f9f9;
@@ -18,21 +19,36 @@
     z-index: 1;
 }
 
-.dropdown:hover .dropdown-content {
+.tiny_custombutton .dropdown:hover .dropdown-content {
     display: block;
 }
 
-.answer-item {
+.tiny_custombutton .answer-item {
     padding: 5px;
     cursor: pointer;
     border-bottom: 1px solid #ddd;
 }
 
-.answer-item:hover {
+.tiny_custombutton .answer-item:hover {
     background-color: #f0f0f0;
 }
+
+/* Стили кнопки */
 .tiny_custombutton button {
     background-image: url([[pix:tiny_custombutton/icon]]);
     background-repeat: no-repeat;
     background-size: contain;
+}
+
+/* Выпадающий список */
+.tiny_custombutton .dropdown select {
+    width: 100%;
+    padding: 5px;
+    font-size: 14px;
+}
+
+/* Выбранный ответ */
+.tiny_custombutton .selected-answer {
+    font-weight: bold;
+    color: #333;
 }
