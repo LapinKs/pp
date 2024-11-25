@@ -5,9 +5,21 @@ import {addMenubarItem, addToolbarButton, addToolbarSection} from 'editor_tiny/u
  * Проверяет, является ли текущий контекст "вставкой в текст".
  * @returns {boolean} Возвращает true, если это нужный контекст.
  */
-const isTextInsertionContext = () => {
-    const pageType = window.M?.pageType || document.body.dataset.pageType;
-    return pageType === 'qtype_ddwots'; // Укажите конкретный тип страницы.
+const isTextInsertionContext = async () => {
+    try {
+        const response = await fetch('/tiny/plugins/custombutton/ajax.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ action: 'check_context' })
+        });
+        const data = await response.json();
+        return data.isTextInsertionContext;
+    } catch (error) {
+        console.error('Error checking context:', error);
+        return false;
+    }
 };
 
 /**
@@ -15,9 +27,6 @@ const isTextInsertionContext = () => {
  * @param {Object} toolbar Текущая конфигурация панели инструментов.
  */
 const configureToolbar = (toolbar) => {
-    if (!isTextInsertionContext()) {
-        return toolbar; // Если не тот контекст, возвращаем toolbar без изменений.
-    }
 
     // Добавляем секцию "customsection" в панель инструментов.
     addToolbarSection(toolbar, 'customsection', 'formatting', true);

@@ -1,4 +1,4 @@
-/* Общий контейнер TinyMCE */
+
 .tiny_custombutton .dropdown {
     position: relative;
     display: inline-block;
@@ -33,21 +33,21 @@
     background-color: #f0f0f0;
 }
 
-/* Стили кнопки */
+
 .tiny_custombutton button {
     background-image: url([[pix:tiny_custombutton/icon]]);
     background-repeat: no-repeat;
     background-size: contain;
 }
 
-/* Выпадающий список */
+
 .tiny_custombutton .dropdown select {
     width: 100%;
     padding: 5px;
     font-size: 14px;
 }
 
-/* Выбранный ответ */
+
 .tiny_custombutton .selected-answer {
     font-weight: bold;
     color: #333;

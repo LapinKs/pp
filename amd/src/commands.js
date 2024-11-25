@@ -2,22 +2,13 @@ import {getButtonImage} from 'editor_tiny/utils';
 import {getString} from 'core/str';
 import {component, buttonName, icon} from 'tiny_custombutton/common';
 import {handleAction} from 'tiny_custombutton/ui';
+import {isTextInsertionContext} from 'tiny_custombutton/configuration'
 
-/**
- * Проверяет, является ли текущий контекст "вставкой в текст".
- * @returns {boolean} Возвращает true, если это нужный контекст.
- */
-const isTextInsertionContext = () => {
-    const pageType = window.M?.pageType || document.body.dataset.pageType;
-    return pageType === 'qtype_ddwots'; // Укажите конкретный тип страницы.
-};
 
-/**
- * Настраивает действия для кнопки.
- * @returns {Function} Callback для TinyMCE.
- */
+
 export const getSetup = async () => {
-    if (!isTextInsertionContext()) {
+    const contextValid = await isTextInsertionContext();
+    if (!contextValid) {
         return () => {}; // Если не тот контекст, возвращаем пустую функцию.
     }
 
