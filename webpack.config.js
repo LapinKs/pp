@@ -1,10 +1,10 @@
 const path = require('path');
 
 module.exports = {
-  entry: './src/plugin.js', // Входной файл вашего плагина
+  entry: './src/plugin.js', 
   output: {
-    filename: 'bundle.js', // Имя выходного файла
-    path: path.resolve(__dirname, 'amd/build') // Путь к директории для выходного файла
+    filename: 'bundle.js', 
+    path: path.resolve(__dirname, 'amd/build')
   },
   module: {
     rules: [
